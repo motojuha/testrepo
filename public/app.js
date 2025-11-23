@@ -84,7 +84,7 @@ function displayItems(items) {
     
     itemsList.innerHTML = items.map(item => `
         <div class="item-card">
-            ${item.image_url ? `<img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="item-image">` : ''}
+            ${item.image_url && isValidImageUrl(item.image_url) ? `<img src="${escapeHtml(item.image_url)}" alt="Product image for ${escapeHtml(item.name)}" class="item-image" onerror="this.style.display='none'">` : ''}
             <div class="item-header">
                 <div class="item-name">${escapeHtml(item.name)}</div>
             </div>
@@ -145,4 +145,15 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Helper function to validate and sanitize image URL
+function isValidImageUrl(url) {
+    if (!url) return false;
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
 }
