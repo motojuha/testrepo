@@ -15,6 +15,7 @@ addItemForm.addEventListener('submit', async (e) => {
     const quantity = parseInt(document.getElementById('itemQuantity').value);
     const price = parseFloat(document.getElementById('itemPrice').value);
     const description = document.getElementById('itemDescription').value;
+    const image_url = document.getElementById('itemImageUrl').value;
     
     // Validate parsed values
     if (!name.trim()) {
@@ -36,7 +37,8 @@ addItemForm.addEventListener('submit', async (e) => {
         name: name.trim(),
         quantity,
         price,
-        description
+        description,
+        image_url
     };
     
     try {
@@ -82,6 +84,7 @@ function displayItems(items) {
     
     itemsList.innerHTML = items.map(item => `
         <div class="item-card">
+            ${item.image_url && isValidImageUrl(item.image_url) ? `<img src="${escapeHtml(item.image_url)}" alt="Product image for ${escapeHtml(item.name)}" class="item-image" onerror="this.style.display='none'">` : ''}
             <div class="item-header">
                 <div class="item-name">${escapeHtml(item.name)}</div>
             </div>
@@ -142,4 +145,15 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Helper function to validate and sanitize image URL
+function isValidImageUrl(url) {
+    if (!url) return false;
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
 }
