@@ -15,6 +15,7 @@ addItemForm.addEventListener('submit', async (e) => {
     const quantity = parseInt(document.getElementById('itemQuantity').value);
     const price = parseFloat(document.getElementById('itemPrice').value);
     const description = document.getElementById('itemDescription').value;
+    const image_url = document.getElementById('itemImageUrl').value;
     
     // Validate parsed values
     if (!name.trim()) {
@@ -36,7 +37,8 @@ addItemForm.addEventListener('submit', async (e) => {
         name: name.trim(),
         quantity,
         price,
-        description
+        description,
+        image_url
     };
     
     try {
@@ -82,6 +84,7 @@ function displayItems(items) {
     
     itemsList.innerHTML = items.map(item => `
         <div class="item-card">
+            ${item.image_url ? `<img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="item-image">` : ''}
             <div class="item-header">
                 <div class="item-name">${escapeHtml(item.name)}</div>
             </div>

@@ -15,7 +15,8 @@ db.exec(`
     name TEXT NOT NULL,
     quantity INTEGER NOT NULL,
     price REAL NOT NULL,
-    description TEXT
+    description TEXT,
+    image_url TEXT
   )
 `);
 
@@ -23,12 +24,12 @@ db.exec(`
 const insertTestData = () => {
   const count = db.prepare('SELECT COUNT(*) as count FROM items').get();
   if (count.count === 0) {
-    const insert = db.prepare('INSERT INTO items (name, quantity, price, description) VALUES (?, ?, ?, ?)');
-    insert.run('Laptop', 10, 999.99, 'High-performance laptop for business');
-    insert.run('Mouse', 50, 19.99, 'Wireless optical mouse');
-    insert.run('Keyboard', 30, 49.99, 'Mechanical keyboard with RGB');
-    insert.run('Monitor', 15, 299.99, '27-inch 4K display');
-    insert.run('Headphones', 25, 79.99, 'Noise-cancelling headphones');
+    const insert = db.prepare('INSERT INTO items (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)');
+    insert.run('Laptop', 10, 999.99, 'High-performance laptop for business', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400');
+    insert.run('Mouse', 50, 19.99, 'Wireless optical mouse', 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400');
+    insert.run('Keyboard', 30, 49.99, 'Mechanical keyboard with RGB', 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400');
+    insert.run('Monitor', 15, 299.99, '27-inch 4K display', 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400');
+    insert.run('Headphones', 25, 79.99, 'Noise-cancelling headphones', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400');
     console.log('Test data inserted successfully');
   }
 };
@@ -54,7 +55,7 @@ app.get('/api/items', (req, res) => {
 // Add new item
 app.post('/api/items', (req, res) => {
   try {
-    const { name, quantity, price, description } = req.body;
+    const { name, quantity, price, description, image_url } = req.body;
     
     if (!name || quantity === undefined || price === undefined) {
       return res.status(400).json({ error: 'Name, quantity, and price are required' });
@@ -68,8 +69,8 @@ app.post('/api/items', (req, res) => {
       return res.status(400).json({ error: 'Price must be a non-negative number' });
     }
     
-    const insert = db.prepare('INSERT INTO items (name, quantity, price, description) VALUES (?, ?, ?, ?)');
-    const result = insert.run(name, quantity, price, description || '');
+    const insert = db.prepare('INSERT INTO items (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)');
+    const result = insert.run(name, quantity, price, description || '', image_url || '');
     
     const newItem = db.prepare('SELECT * FROM items WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json(newItem);
